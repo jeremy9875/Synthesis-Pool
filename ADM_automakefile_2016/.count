@@ -1,0 +1,20 @@
+#!/bin/bash
+count=$(echo $(sed -nr "s/.*COUNT=([0-9]*)/\1/p" Makefile) + 1 | bc);
+
+case $1 in
+     "GET")
+	counti=$(echo $(sed -nr "s/.*COUNT=([O-9]*)/\1/p" Makefile))
+	echo "The number saved is $counti"
+	;;
+     "GET_OLD")
+	old=$(echo "$count - 2" | bc)
+	$2 $3 "$(echo -n $4 | sed "s/ //g")_$old_zip"
+	;;
+     "DELETE")
+	old=$(echo "$count - 2" | bc)
+	rm "$(echo -n $2 | sed "s/ //g")_$old.zip"
+	;;
+     *)
+     sed -i "s/COUNT=.*/$(echo COUNT=$count)/" Makefile
+     ;;
+esac

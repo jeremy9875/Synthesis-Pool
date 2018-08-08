@@ -1,0 +1,96 @@
+#!/bin/sh
+## automakefile for automakefile in /home/jeremy.elkaim/ADM_automakefile_2016
+## 
+## Made by jeremy elkaim
+## Login   <jeremy.elkaim@epitech.net>
+## 
+## Started on  Mon Jun 26 13:51:03 2017 jeremy elkaim
+## Last update Wed Jun 28 15:56:01 2017 jeremy elkaim
+##
+
+if [ -z "$1" ]
+then
+    printf "error\n"
+    exit 84
+elif [ ! -s "$1" ]
+then
+    printf "error\n"
+    exit 84
+elif [ ! -e "$1" ]
+then
+    printf "error\n"
+    exit 84
+elif [ $# -ge 2 ]
+then
+    printf "error\n"
+    exit 84
+elif [ ! -s "$1" ]
+then
+    printf "error\n"
+    exit 84
+fi
+
+dir=$(cat $1 | grep 'PROJECT_DIR' | cut -d ";" -f2)
+if [ -z $dir ]
+then
+    printf "error\n"
+    exit 84
+fi
+gcc=$(cat $1 | grep 'CC' | cut -d ";" -f2)
+
+src=$(cat $1 | grep '.c' | cut -d ";" -f2)
+
+exec=$(cat $1 | grep 'EXEC' | cut -d ";" -f2)
+
+cflag=$(cat $1 | grep 'CFLAGS' | cut -d ";" -f2)
+
+ldflag=$(cat $1 | grep 'LDFLAGS' | cut -d ";" -f2)
+
+lib_dir=$(cat $1 | grep 'LIBS_DIR' | cut -d ";" -f2)
+
+printf  "CC\t=\t" >> $dir/Makefile
+printf $gcc >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf  "RM\t=\trm -rf" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "SRC\t=\t" >> $dir/Makefile
+for i in $dir/*.c
+do
+    printf $i| awk 'BEGIN{FS="/"}{printf "\t\t%s\t\\\n", $2;}' >> $dir/Makefile
+done
+printf "\nEXEC\t=\t" >> $dir/Makefile
+printf $exec >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "OBJ\t=\t" >> $dir/Makefile
+printf "\$(SRC:.c=.o)" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "CFLAG\t+=\t" >> $dir/Makefile
+echo $cflag >> $dir/Makefile
+printf "\nLDFLAG\t+=\t-I " >> $dir/Makefile
+for i in $dir/*.h
+do
+    printf $i| awk 'BEGIN{FS="/"}{printf "%s\\\t\n", $2;}' >> $dir/Makefile
+done
+printf "\nLIB_DIR\t+=\t-L " >> $dir/Makefile
+printf $lib_dir >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "all\t:\t\$(EXEC)\n\n" >> $dir/Makefile
+printf "\$(EXEC)\t:\t\$(OBJ)\n" >> $dir/Makefile
+printf "\t\t\$(CC) \$(OBJ) -o \$(EXEC)" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "clean\t:\n\t\t\$(RM) \$(OBJ)" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "fclean\t:\tclean\n" >> $dir/Makefile
+printf "\t\t\$(RM) \$(EXEC)" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "re\t:\tfclean all" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "archive\t:\n\t\t tar cvvf backup/ \$(SRC)" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "revert\t:\n\t\t tar xvf backup/*.tgz" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf "delete\t:\n\t\t\$(RM) backup/*" >> $dir/Makefile
+printf "\n\n" >> $dir/Makefile
+printf ".PHONY\t:\tfclean clean all re archive revert backup" >> $dir/Makefile
+
+exit 0
